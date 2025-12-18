@@ -143,13 +143,41 @@ module RedmineImLinkWatchersPatch
 					## Currently support MSTeams only
 					p_name = Setting.plugin_redmine_im_link['meetinglinkname'].to_s
 					p_url = Setting.plugin_redmine_im_link['meetingurl'].to_s
-					p_topic = dostring(User.current,issue,'',Setting.plugin_redmine_im_link['meetingtopic'].to_s)
-					p_message = dostring(User.current,issue,'',Setting.plugin_redmine_im_link['meetinginitmessage'].to_s)
-					p_watchers = watcher_email_list.join(",")
-
-					linkurl = dostring(User.current,issue,'',p_url,{:watcherlist=>p_watchers,:meetingtopic=>p_topic,:meetinginitmessage=>p_message})
-					linkurl = URI.escape(linkurl)
 					p_type = Setting.plugin_redmine_im_link['meetinglinktype'].to_s
+					
+					## Get Chat ID custom field setting
+					chatid_cf_id = Setting.plugin_redmine_im_link['meetingchatidcf'].to_i
+					
+					## Check if custom field has value
+					existing_chat_id = nil
+					if chatid_cf_id > 0 && issue.respond_to?(:custom_field_value)
+						begin
+							chat_id_value = issue.custom_field_value(chatid_cf_id)
+							existing_chat_id = chat_id_value unless chat_id_value.blank?
+						rescue
+							existing_chat_id = nil
+						end
+					end
+					
+					## Generate URL based on whether chat ID exists
+					if existing_chat_id.present?
+						## Use custom URL template if configured, otherwise use default
+						p_chaturl = Setting.plugin_redmine_im_link['meetingchaturl'].to_s
+						if p_chaturl.blank?
+							linkurl = "https://teams.microsoft.com/l/chat/#{existing_chat_id}"
+						else
+							linkurl = dostring(User.current,issue,'',p_chaturl)
+						end
+						linkurl = URI.escape(linkurl)
+					else
+						## Use original logic to create new chat
+						p_topic = dostring(User.current,issue,'',Setting.plugin_redmine_im_link['meetingtopic'].to_s)
+						p_message = dostring(User.current,issue,'',Setting.plugin_redmine_im_link['meetinginitmessage'].to_s)
+						p_watchers = watcher_email_list.join(",")
+
+						linkurl = dostring(User.current,issue,'',p_url,{:watcherlist=>p_watchers,:meetingtopic=>p_topic,:meetinginitmessage=>p_message})
+						linkurl = URI.escape(linkurl)
+					end
 					case p_type
 					when '2'
 						s << link_to(p_name,linkurl,:target => "_blank")

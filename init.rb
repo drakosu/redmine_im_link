@@ -43,7 +43,9 @@
   :meetinginitmessage => '',
   :meetinglinktype => '1',
   :meetinginclude => 'domain1.com',
-  :meetingexclude => 'email1@domain2.com'
+  :meetingexclude => 'email1@domain2.com',
+  :meetingchatidcf => '',
+  :meetingchaturl => ''
   }, 
   :partial => 'redmine_im_link/settings'
   
