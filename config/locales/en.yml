@@ -43,6 +43,11 @@ en:
 
   im_meeting_link_url_desc: "Link to start meeting. Depends on IM's capability. You can use %meetingtopic% and %meetinginitmessage% to append correspond value in the link."
 
+  im_meeting_id_cf: 'Meeting ID Custom Field'
+  im_meeting_id_cf_desc: 'Select the Issue custom field that stores Meeting ID. If specified custom field has a value, Meeting Link will open the existing meeting (instead of creating a new one, if the IM is capable for link directly with ID). Recommended to use a "Text" type custom field.'
+  im_existing_meeting_link_url: 'Existing Meeting URL'
+  im_existing_meeting_link_url_desc: 'Link to existing meeting when Meeting ID field has a value (leave blank to use default). Meeting ID field value can be retrieved with %meetingid%. Supports all %variable% substitutions (e.g. %cf_275% for custom field 275 value). Default: https://teams.microsoft.com/l/chat/%meetingid%'
+      
   im_meeting_topic: 'Meeting Topic'
   im_meeting_topic_desc: 'Topic for meeting. Will replace %meetingtopic% in Link URL'
 

@@ -20,6 +20,7 @@ module RedmineImLinkWatchersPatch
 					p1 = p1.gsub('%watcherlist%',options[:watcherlist]) unless options[:watcherlist].nil?
 					p1 = p1.gsub('%meetingtopic%',options[:meetingtopic]) unless options[:meetingtopic].nil?
 					p1 = p1.gsub('%meetinginitmessage%',options[:meetinginitmessage]) unless options[:meetinginitmessage].nil?
+					p1 = p1.gsub('%meetingid%',options[:meetingid]) unless options[:meetingid].nil?
 					p1.scan(/%cf_(\d+)%/).flatten.each { |id|
 						cf_value = issue.custom_field_value(id.to_i) || ""
 						p1 = p1.gsub("%cf_#{id}%",cf_value)
@@ -146,7 +147,7 @@ module RedmineImLinkWatchersPatch
 					p_type = Setting.plugin_redmine_im_link['meetinglinktype'].to_s
 					
 					## Get Chat ID custom field setting
-					chatid_cf_id = Setting.plugin_redmine_im_link['meetingchatidcf'].to_i
+					chatid_cf_id = Setting.plugin_redmine_im_link['meetingexistingidcf'].to_i
 					
 					## Check if custom field has value
 					existing_chat_id = nil
@@ -162,11 +163,11 @@ module RedmineImLinkWatchersPatch
 					## Generate URL based on whether chat ID exists
 					if existing_chat_id.present?
 						## Use custom URL template if configured, otherwise use default
-						p_chaturl = Setting.plugin_redmine_im_link['meetingchaturl'].to_s
+						p_chaturl = Setting.plugin_redmine_im_link['meetingexistingurl'].to_s
 						if p_chaturl.blank?
 							linkurl = "https://teams.microsoft.com/l/chat/#{existing_chat_id}"
 						else
-							linkurl = dostring(User.current,issue,'',p_chaturl)
+							linkurl = dostring(User.current,issue,'',p_chaturl,{:meetingid=>existing_chat_id})
 						end
 						linkurl = URI.escape(linkurl)
 					else

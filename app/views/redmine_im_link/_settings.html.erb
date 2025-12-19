@@ -3,7 +3,7 @@
 <% select_options1 = '<option value=""></option>' << options_from_collection_for_select(string_fields, :id, :name, @settings['linkcf1'].to_i) %>
 <% select_options2 = '<option value=""></option>' << options_from_collection_for_select(string_fields, :id, :name, @settings['linkcf2'].to_i) %>
 <% issue_custom_fields = IssueCustomField.all %>
-<% meeting_chatid_cf_options = '<option value="">--- Not Used (Create New Chat Each Time) ---</option>'.html_safe + options_from_collection_for_select(issue_custom_fields, :id, :name, @settings['meetingchatidcf'].to_i) %>
+<% meeting_chatid_cf_options = '<option value="">--- Not Used (Create New Meeting Each Time) ---</option>'.html_safe + options_from_collection_for_select(issue_custom_fields, :id, :name, @settings['meetingexistingidcf'].to_i) %>
 
 <fieldset>
 <legend><%= l(:im_settings_legend1) %></legend>
@@ -188,21 +188,15 @@
 </p>
 
 <p>
-  <label>IM Chat ID Storage Field</label>
-  <%= select_tag 'settings[meetingchatidcf]', meeting_chatid_cf_options %>
-  <em>Select the Issue custom field to store IM Chat ID.<br />
-      If the field has a value, Meeting Link will open the existing chat (instead of creating a new one).<br />
-      Recommended to use a "Text" type custom field.
-  </em><br />
+  <label><%= l(:im_meeting_id_cf) %></label>
+  <%= select_tag 'settings[meetingexistingidcf]', meeting_chatid_cf_options %>
+  <em><%= l(:im_meeting_id_cf_desc) %></em><br />
 </p>
 
 <p>
-  <label>IM Chat URL Template</label>
-  <%= text_area_tag 'settings[meetingchaturl]', @settings['meetingchaturl'], rows: 2 %>
-  <em>URL template used when Chat ID field has a value (leave blank to use default).<br />
-      Example: https://teams.microsoft.com/l/chat/%cf_275%<br />
-      Supports all %variable% substitutions (e.g. %cf_275% for custom field 275 value).
-  </em><br />
+  <label><%= l(:im_existing_meeting_link_url) %></label>
+  <%= text_area_tag 'settings[meetingexistingurl]', @settings['meetingexistingurl'], rows: 2 %>
+  <em><%= l(:im_existing_meeting_link_url_desc) %></em><br />
 </p>
 
 <p><label><%= l(:im_meeting_topic) %></label>
