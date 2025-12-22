@@ -216,12 +216,18 @@ module RedmineImLinkWatchersPatch
 				inc = p_inc.split(/[,\s]+/)
 				exc = p_exc.split(/[,\s]+/)
 			end
+
+			# ensure watcher_users is relation-like before calling preload
+			watcher_users = object.watcher_users
+			watcher_users = watcher_users.preload(:email_address) if watcher_users.respond_to?(:preload)
+			# prepare meeting url template if meeting links are enabled
+			p_url = Setting.plugin_redmine_im_link['meetingurl'].to_s if show_meeting_link
 			
-			lis = object.watcher_users.preload(:email_address).collect do |user|
+			lis = watcher_users.collect do |user|
 				if show_meeting_link
 					foundinc = inc.any?{|s| user.mail.downcase.include?(s.downcase)}
 					foundexc = exc.any?{|s| user.mail.downcase.include?(s.downcase)}
-					if (foundinc and not foundexc) or (p_url.include? '%cf%')
+					if (foundinc and not foundexc) or (p_url && p_url.include?('%cf%'))
 						watcher_email_list << user.mail.to_s
 					end
 				end
